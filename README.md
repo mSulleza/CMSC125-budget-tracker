@@ -9,7 +9,6 @@ sudo apt-get install qemu
 
 
 HOW TO RUN THE ICS-OS:
-
 ```
 cd ics-os
 ```
