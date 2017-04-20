@@ -1,6 +1,6 @@
 /*
   Name: dex low-level memory management library
-  Copyright: 
+  Copyright:
   Author: Joseph Emmanuel DL Dayo
   Date: 02/03/04 18:06
   Description: This module handles everything that has to do
@@ -11,24 +11,24 @@
 
 
 /* Stop Interrupts */
-inline void stopints()
+void stopints()
 {
   asm ("cli");
 }
 
 /*start Interrupts */
 
-inline void startints()
+void startints()
 {
   asm("sti");
 };
 
-inline void wbinvd()
+void wbinvd()
 {
   asm ("wbinvd");
 };
 
-inline void hlt()
+void hlt()
 {
   asm ("hlt");
 };
@@ -47,7 +47,7 @@ for (i=0;i<size / sizeof(mmap) ; i++)
    if (map[i].type==1) printf("free\n");
       else
       printf("reserved.\n");
-  }; 
+  };
 };
 
 /*using the memory map provided by grub, create the stack of physical frames*/
@@ -57,13 +57,13 @@ DWORD mem_size = 0 , i, i2;
 stackbase[0]=0;
 for (i=0;i < size / sizeof(mmap) ; i++)
   {
-  
+
    DWORD base = grub_meminfo[i].base_addr_low;
    DWORD base_end = base + grub_meminfo[i].length_low;
-   
+
    /*If type has a value of 1 it is free otherwise we cannot use
      this memory region*/
-   if (grub_meminfo[i].type == 1) 
+   if (grub_meminfo[i].type == 1)
        {
                     for (i2 = base; i2 < base_end; i2 += 0x1000)
                        {
@@ -76,10 +76,10 @@ for (i=0;i < size / sizeof(mmap) ; i++)
 
                    mem_size += ( base_end - base );
       };
-  }; 
-  
-totalpages = stackbase[0]; 
-return mem_size;   
+  };
+
+totalpages = stackbase[0];
+return mem_size;
 };
 
 
@@ -103,10 +103,10 @@ if (stackbase+0x100000>=mem<memamount-0x1000)
     stackbase[stackbase[0]]=mem;
    }
      else
-   { 
-   char temp[255]; 
+   {
+   char temp[255];
    printf("memory manager: An invalid value (%s) was tried to be added to the\n");
-   printf("memory manager: free physical pages list.\n");    
+   printf("memory manager: free physical pages list.\n");
    };
 };
 
@@ -167,38 +167,38 @@ int maplineartophysical2(unsigned int *pagedir, /*the location of the page direc
 	  unsigned int pagedirindex,pagetableindex,*pagetable;
       DWORD pg;
       DWORD *kicker=(DWORD*)SYS_PAGEDIR2_VIR;
-      
+
 	  /*get the index of the page directory and the pagetable respectively*/
 	  pagedirindex= linearaddr >> 22;
 	  pagetableindex= (linearaddr  & 0x3FFFFF) >> 12;
-	  
+
 	  /*get the location of the page table and mask the first 12 bits*/
 	  pg=(pagedir[pagedirindex] & 0xFFFFF000);
-	  
+
 	  if (pg==0)  /*there is no entry?*/
 		     {
 				 /*map a new memory location*/
 				pagedir[pagedirindex]=(DWORD) mempop();
                 kicker[4]=(pagedir[pagedirindex]&0xFFFFF000) | 1;
-                
+
                 refreshpages();
-                
+
                 pagetable=(DWORD*)SYS_PAGEDIR4_VIR;
 
                 tlb_address = pagetable;
-                invtlb();                
+                invtlb();
 				/*clear the locations of the page table to zero*/
 				memset(pagetable,0,4096);
 				/*set the present bit of the pagetable dir entry*/
 				pagedir[pagedirindex] = pagedir[pagedirindex] | 1 | PG_USER | PG_WR;
 				refreshpages();
-				
+
 				pg = (pagedir[pagedirindex] & 0xFFFFF000);
              };
-             
+
     kicker[4]=pg | 1;
     refreshpages();
-        
+
 
     pagetable=(DWORD*)SYS_PAGEDIR4_VIR;
 
@@ -206,10 +206,10 @@ int maplineartophysical2(unsigned int *pagedir, /*the location of the page direc
     pagetable[pagetableindex]=physical;
 
     refreshpages();
-    
+
     tlb_address = linearaddr;
     invtlb();
-    
+
     /*done!*/
    };
 
@@ -222,7 +222,7 @@ DWORD getvirtaddress(DWORD physicaladdr)
     kicker[2]=physicaladdr | 1;
     /*if (current_process->accesslevel==ACCESS_SYS)*/
     refreshpages();
-        
+
     return SYS_PAGEDIR3_VIR;
 ;};
 
@@ -255,17 +255,17 @@ DWORD xmaplineartophysical(const DWORD linearmemory,const DWORD physicalmemory,
          if (pagetbl==0) {dex32_restoreints(flags);enablepaging();return 0;};
          pagedir[dirindex]=(DWORD)pagetbl | 1;
         };
-        
+
      if (pagedir[dirindex]&1)
       {
        pagetbl=(DWORD*)(pagedir[dirindex]&0xFFFFF000);
        pagetbl[pageindex]=physicalmemory | (attb&0xFFF);
-       
+
        dex32_restoreints(flags);
        enablepaging();
        return 1;
       }
-      
+
      dex32_restoreints(flags);
      enablepaging();
     return 0;
@@ -321,7 +321,7 @@ void dex32_freeuserpagetable(DWORD *pgd)  //ATOMIC function
      DWORD pages=0;
      storeflags(&cpuflags);
      stopints();
-     
+
      pagedir =(DWORD*)getvirtaddress((DWORD)pgd);
      for (i=userstart;i<userend;i++)
           if (pagedir[i]&1) //check if present
@@ -330,7 +330,7 @@ void dex32_freeuserpagetable(DWORD *pgd)  //ATOMIC function
                pages++;
                pagedir[i]=0;
              };
-             
+
      if (pagedir[auxstart]&1&&(pgd!=pagedir1))
              {
                mempush(pagedir[auxstart]&0xFFFFF000);
@@ -396,7 +396,7 @@ void freemultiple(void *linearmemory,DWORD *pagedir,DWORD pages)
   };
 
 DWORD getlinearloc(void *linearmemory,DWORD *pagedir)  //ATOMIC function
-   { 
+   {
      DWORD w=(DWORD)linearmemory,ret=0,*pg;
      DWORD dirindex=(w&0xFFC00000) >> 22;
      DWORD pageindex=(w&0x3FFFFF) >> 12;
@@ -405,7 +405,7 @@ DWORD getlinearloc(void *linearmemory,DWORD *pagedir)  //ATOMIC function
 
      dex32_stopints(&flags);
      pg=(DWORD*)getvirtaddress((DWORD)pagedir); //convert to a virtual address so that
-               
+
      pagetbl=(DWORD*)(pg[dirindex]&0xFFFFF000);
      if (pagetbl!=0)
      {
@@ -415,8 +415,8 @@ DWORD getlinearloc(void *linearmemory,DWORD *pagedir)  //ATOMIC function
           ret = 1;
      }
      else
-     ret =0;    
-     
+     ret =0;
+
      dex32_restoreints(flags);
      return ret;
    };
@@ -428,7 +428,7 @@ DWORD getmultiple(void *linearmemory,DWORD *pagedir,DWORD pages)
   {
   int i;
   DWORD total=0;
-  
+
   for (i=0;i<pages;i++)
     {
       total+=getlinearloc(linearmemory,pagedir);
@@ -590,29 +590,29 @@ void *commit(DWORD virtualaddr,DWORD pages)
      DWORD flags;
      storeflags(&flags);
      stopints();
-     
+
      #ifdef MEM_LEAK_CHECK
      printf("system committed %d pages.\n",pages);
      #endif
-   
+
      for (i=0;i<pages;i++)
         {
           DWORD pageadr=(DWORD)mempop();
-          
+
           //if out of physical address, call the VMM
           if (pageadr==0) pageadr=obtainpage();
-          
+
           //out of memory error
           if (pageadr == -1) {ret = -1;break;};
-          
+
           maplineartophysical2((DWORD*)SYS_PAGEDIR_VIR,virtualaddr,pageadr,PG_PRESENT);
           maplineartophysical2((DWORD*)SYS_KERPDIR_VIR,virtualaddr,pageadr,PG_PRESENT);
           virtualaddr+=0x1000;
 
         };
-        
-     restoreflags(flags);   
-   
+
+     restoreflags(flags);
+
      return ret;
     };
 
@@ -634,19 +634,19 @@ void *sbrk(int amt)
    {
      int pages=(amt/4096)+1;
      char *ret=0;
-     
+
      //cannot handle negative values as of the moment
      if (amt<0) return -1;
-     
+
      //return location of break
      if (amt==0) return knext-1;
-     
+
      if (amt%4096==0) pages=amt/4096;
-     
+
      ret=commit((DWORD)knext,pages);
 
      knext+=(pages)*4096;
-     
+
      return (void*)ret;
    };
 
@@ -663,7 +663,7 @@ void *dex32_sbrk(unsigned int amt)
      if (amt==0)
         {
         dex32_restoreints(flags);
-        
+
         return ((void*)current_process->knext);
         };
      if (amt%4096==0) pages=amt/4096;
@@ -777,10 +777,10 @@ void *dex32_commitblock(DWORD virtualaddr,int amt,
      char *ret=0;
      if (amt==0) pages=1;
         else
-     if (amt%4096==0) pages=amt/4096;      
-     
+     if (amt%4096==0) pages=amt/4096;
+
      ret=dex32_commit(virtualaddr,pages,pagedir,attb);
-     
+
      *pagecount=pages;
      return ret;
    };
@@ -835,7 +835,7 @@ void *dex32_commit(DWORD virtualaddr,DWORD pages,DWORD *pagedir,DWORD pattb)
      void *ret=(void*)virtualaddr;
      DWORD *pg;
      DWORD flags;
-     
+
      storeflags(&flags);
      stopints();
 
@@ -863,17 +863,17 @@ void *dex32_commit(DWORD virtualaddr,DWORD pages,DWORD *pagedir,DWORD pattb)
               if (current_process->accesslevel==ACCESS_SYS)
                {
                    pg=(DWORD*)getvirtaddress((DWORD)pagedir1);
-        
+
                    maplineartophysical2(pg,virtualaddr,
                    pageadr,PG_PRESENT | /*PG_USER |*/ pattb);
                };
-           
+
           virtualaddr+=0x1000;
          };
-         
+
      refreshpages();
      restoreflags(flags);
-     
+
      return ret;
     };
 
@@ -932,7 +932,7 @@ memory_manager.hdr.type = DEVMGR_MEM;
 
 /* Fill up the service functions that the device manager provices, this
    functions will be visible to other modules that use the mem_mgr interface*/
-   
+
 memory_manager.sbrk = sbrk;
 memory_manager.mem_map = maplineartophysical2;
 memory_manager.commit = commit;
@@ -942,4 +942,3 @@ memory_manager.freemultiple = freemultiple;
 devmgr_register( (devmgr_generic*) &memory_manager );
 
 };
-

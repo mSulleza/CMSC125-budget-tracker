@@ -35,7 +35,7 @@ void mouse_irq() // (not used but just there)
 //  outportb(0x20,0x20);
 }
 
-inline void mouse_wait(unsigned char  a_type) //unsigned char
+void mouse_wait(unsigned char  a_type) //unsigned char
 {
   unsigned int _time_out=100000; //unsigned int
   if(a_type==0)
@@ -62,7 +62,7 @@ inline void mouse_wait(unsigned char  a_type) //unsigned char
   }
 }
 
-inline void mouse_write(unsigned char a_write) //unsigned char
+void mouse_write(unsigned char a_write) //unsigned char
 {
   //Wait to be able to send a command
   mouse_wait(1);
@@ -88,7 +88,7 @@ void installmouse()
   //Enable the auxiliary mouse device
   mouse_wait(1);
   outportb(0x64, 0xA8);
- 
+
   //Enable the interrupts
   mouse_wait(1);
   outportb(0x64, 0x20);
@@ -98,15 +98,15 @@ void installmouse()
   outportb(0x64, 0x60);
   mouse_wait(1);
   outportb(0x60, _status);
- 
+
   //Tell the mouse to use default settings
   mouse_write(0xF6);
   mouse_read();  //Acknowledge
- 
+
   //Enable the mouse
   mouse_write(0xF4);
   mouse_read();  //Acknowledge
- 
+
   //set the  handler,mousewrapper (in irqwrap.asm), IRQ12
   setinterruptvector(0x2C,dex_idtbase,0x8E,mousewrapper,SYS_CODE_SEL);
 
@@ -140,4 +140,3 @@ void init_mouse()
    memset(&mouse_busywait,0,sizeof(mouse_busywait));
    irq_addhandler(mouse_devid,12,mouse_irq);
 }
-

@@ -6,7 +6,24 @@ Installation:
 ```
 sudo apt-get install qemu
 ```
+Check GCC version:
+```
+gcc -v
+```
 
+-if running GCC Version 5.x:
+```
+sudo apt-get install gcc-4.9-multilib
+```
+
+Edited something in the files and want to see the changes?
+
+GOTO ics-os folder
+
+```
+make clean
+sudo make install
+```
 
 HOW TO RUN THE ICS-OS:
 ```

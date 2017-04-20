@@ -34,7 +34,7 @@ struct nl_entry {
 
 #define HASH_SIZE 1024
 
-static inline unsigned int nl_calc_hash(int cat, int id1, int id2, int id3, int id4)
+static unsigned int nl_calc_hash(int cat, int id1, int id2, int id3, int id4)
 {
   unsigned int h;
 
@@ -130,7 +130,7 @@ parse_name_list(struct pci_access *a)
 	  id2 = id3 = id4 = 0;
 	  q += 4;
 	}
-      else if (q == r+1) 
+      else if (q == r+1)
 	switch (cat)
 	  {
 	  case NL_VENDOR:

@@ -1,19 +1,19 @@
 /*
   Name: dex low-level memory management library
-  Copyright: 
+  Copyright:
   Author: Joseph Emmanuel DL Dayo
   Date: 02/03/04 18:06
   Description: This module handles everything that has to do
   with memory, except the high-level memory functions like malloc....
-  
+
     DEX educational extensible operating system 1.0 Beta
     Copyright (C) 2004  Joseph Emmanuel DL Dayo
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,7 +21,7 @@
     
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 
@@ -104,8 +104,8 @@ char *kbaseheap=(char*)0xC0000000;          //marks the location of the kernel h
 char *kmodeproc=(char*)0xD0000000,
      *kmodeproc_next=(char*)0xD0000000;     //marks the location of the kernel mode
                                             //process address space
-                                            
-char *lmodeproc=(char*)0xE0000000,          //marks the location of the shared library / driver 
+
+char *lmodeproc=(char*)0xE0000000,          //marks the location of the shared library / driver
      *lmodeproc_next= (char*)0xE0000000;    //address space
 char *knext=          (char*)0xC0000000;    //marks the location of the top of the kernel heap
 
@@ -121,7 +121,7 @@ idtentry *dex_idtbase=(idtentry*)0x2000;    //marks the location of the IDT
 gdtentry *dex_gdtbase=(gdtentry*)0x1000;    //marks the location of the GDT
 /*=================================================================================*/
 
-/*Stores the total number of pages and memory respectively*/                
+/*Stores the total number of pages and memory respectively*/
 DWORD totalpages=0;
 DWORD totalmemory=0;
 
@@ -133,11 +133,11 @@ DWORD *pagedir1;
 extern void enablepaging();
 extern void disablepaging();
 extern void switchuserprocess(void);
-extern inline void storeflags(DWORD *flags);
-extern inline void restoreflags(DWORD flags);
+extern void storeflags(DWORD *flags);
+extern void restoreflags(DWORD flags);
 extern void setpagedir(DWORD *dir);
-inline void startints();
-inline void stopints();
+void startints();
+void stopints();
 
 /*=================================Prototype definitions here==============================*/
 
@@ -172,7 +172,7 @@ DWORD getvirtaddress2(DWORD physicaladdr,DWORD hdl);
 void maplineartophysical(unsigned int *pagedir,unsigned int linearaddr,
       unsigned int physical,unsigned int attribute);
 int  maplineartophysical2(unsigned int *pagedir,unsigned int linearaddr,
-      unsigned int physical,unsigned int attribute);      
+      unsigned int physical,unsigned int attribute);
 DWORD xmaplineartophysical(const DWORD linearmemory,const DWORD physicalmemory,
    DWORD *pagedir,const DWORD attb);
 void mem_init();

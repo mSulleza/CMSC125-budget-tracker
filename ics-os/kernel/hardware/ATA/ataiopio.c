@@ -331,7 +331,7 @@ void pio_rep_outbyte( unsigned int addrDataReg,
          bCnt = 16384;
       else
          bCnt = (unsigned int) byteCnt;
-         
+
       repoutbyte(bufSeg,bufOff,bCnt,dataRegAddr);
       byteCnt = byteCnt - (long) bCnt;
    }

@@ -1,26 +1,26 @@
 /*
   Name: DEX32 Process Management Module
-  Copyright: 
+  Copyright:
   Author: Joseph Emmanuel Dayo
   Date: 09/11/03 04:11
   Description: Provides functions for process management and task switching
-  
+
     DEX educational extensible operating system 1.0 Beta
     Copyright (C) 2004  Joseph Emmanuel DL Dayo
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #ifndef _PROCESS_H
@@ -29,7 +29,7 @@
 #include "../dextypes.h"
 #include "../vfs/vfs_core.h"
 #include "../console/dex_DDL.h"
-                                
+
 #define ACCESS_SYS 0
 #define ACCESS_USER 1
 #define ACCESS_DRIVER 2
@@ -148,7 +148,7 @@ DWORD fpu[27];
 /*The primary data structure used for describing a process or thread,
   the first element of this data structure holds TSS data*/
 typedef struct _PCB386 {
-    /*regs must be at the beginning of the PCB since the 
+    /*regs must be at the beginning of the PCB since the
       TSS directly points to the beginning of this structure*/
     saveregs regs;      /* TSS data, also for placing initial values for EAX,EBX etc.
                         A very hardware specific data structure for the Intel x86 family*/
@@ -161,11 +161,11 @@ typedef struct _PCB386 {
     DWORD owner;        /*The owner refers to the pid of the process that spawned
                         this thread/process*/
     char name[256];     // the name of the process
-    vfs_node *workdir;  //points to the vfs_node of the working directory 
+    vfs_node *workdir;  //points to the vfs_node of the working directory
     DWORD accesslevel;  //the security bits for this process
     DWORD priority;     //the process priority
     DWORD status;       //A flag for describing the status of the process
-    DWORD waiting;      //Set to the amount of time for a sleeping process 
+    DWORD waiting;      //Set to the amount of time for a sleeping process
     DWORD childwait;    /*used by dex32_wait to check if a child has terminated
                         or not, incremented by 1 when a child process is spawned*/
 
@@ -173,40 +173,40 @@ typedef struct _PCB386 {
     DWORD lastcputime, totalcputime; /*the taskswitcher increments this value every time
                                        the process takes control of the CPU*/
     DWORD arrivaltime;   //holds the time when this process arrived
-    
+
     DWORD semhandle;    //holds the handle of the process semaphore
-    
+
     process_mem *meminfo; /*points to a data structure containing the memory locatons taken up by
-			            this process so that the process manager could clean this up easily.*/	
+			            this process so that the process manager could clean this up easily.*/
 
     void *stackptr,*stackptr0; //user and system bottom of stack pointers
     char *parameters;   //stores the parameters passed to this process
     char *imagesource;  //records the full path of the source file
     char *knext;        //holds the location of the programs' break (Or the end of the heap)
     char *environment;  //holds the location of the environment variables
-    
+
     void (*putc)(char *c); //points the output function to be used (User mode apps only)
     char (*getc)();        //points to the input function to be used (User mode apps only)
-    
+
     /*---------------------------------Process I/O data-------------------------------------*/
     DEX32_DDL_INFO *outdev;  //points to the output device descriptor
     void *stdout;            //For pipes *NOT YET IMPLEMENTED*
     void *stdin;             //For pipes *NOT YET IMPLEMENTED*
     int context,function;    /*used by device drivers to determine context info.
                                Reserved on USER mode programs.*/
-    
+
     int meshead,mestotal,curmes;
     int lasterror; //used by API calls to set the last error on a per thread basis
-    int misc;      //used for troublesome stdlib functions like strtok  
+    int misc;      //used for troublesome stdlib functions like strtok
 
     struct _PCB386 *next;   //Points to the next PCB
     struct _PCB386 *before; //Points to the previous PCB
-    
+
     IPC_message mesq[MAX_MESSAGE]; //pointer to the process message queue
     DWORD (*dex32_signal)(DWORD,DWORD);//the dex32 general signal handler
-    
+
     //Debugging data
-    DWORD cursyscall[2],op_success; //gives information about the last systems calls made    
+    DWORD cursyscall[2],op_success; //gives information about the last systems calls made
     void *signaltable;              //Reserved for the signal table *NOT YET IMPLEMENTED*
     } PCB386;
 
@@ -225,8 +225,8 @@ extern semaphore *semaphore_head;
 /* The next process to be created will use this process ID
    pids 1-0x8A is reserved, pid 0 is the kernel pid*/
 extern DWORD nextprocessid;
-    
-//used for the busy waiting loops of the process manager.    
+
+//used for the busy waiting loops of the process manager.
 extern sync_sharedvar processmgr_busy;
 
 extern int totalprocesses;
@@ -253,7 +253,7 @@ extern FPUregs ps_fpustate,ps_kernelfpustate;
 extern void switchprocess();
 
 void    addmemusage(process_mem **memptr,DWORD vaddr,DWORD pages);
-void    addprocess(char *processname,process_mem *mem);  
+void    addprocess(char *processname,process_mem *mem);
 int     broadcastmessage(DWORD sender,DWORD mes,DWORD data);
 DWORD   createkthread(void *ptr,char *name,DWORD stacksize);
 DWORD   createprocess(void *ptr,char *name,
@@ -315,6 +315,6 @@ void    systemcall();
 void    process_init();
 void 	ps_shutdown();
 void copyprocessmemory(process_mem *memptr,process_mem **destmemptr);
-inline void taskswitch();
+void taskswitch();
 void show_process_stat(int pid);
 #endif
