@@ -125,17 +125,21 @@ void add_expense()
   temp->time = time();
   // update the value of the balance
   strcpy(str, "NULL");
-  while(strcmp(str, "1") != 0 || strcmp(str, "2") != 0)
+  while(1)
   {
     clrscr();
     printf("IS THE EXPENSE RECURRING?\n[1]YES\n[2]NO\nChoice: ");
     fgets(str, 50, stdin);
     strtok(str, "\n");
-    if (strcmp(str, "2") == 0) break;
-    if (strcmp(str, "1") == 0)
+    if (strcmp(str, "2") == 0)
+    {
+      temp->recurring = 0;
+      break;
+    }
+    else if (strcmp(str, "1") == 0)
     {
       strcpy(str, "NULL");
-      while(strcmp(str, "1") != 0 || strcmp(str, "2") != 0 || strcmp(str, "3") != 0)
+      while(1)
       {
         clrscr();
         printf("How often?\n[1]Daily\n[2]Weekly\n[3]Monthly\nChoice: ");
@@ -143,37 +147,30 @@ void add_expense()
         strtok(str, "\n");
         if (strcmp(str, "1") == 0)
         {
-          if (strcmp(str, "1") == 0)
-          {
-            clrscr();
-            printf("DAILY EXPENSE ADDED!\n");
-            temp->recurring = 1;
-            break;
-          }
-          else if (strcmp(str, "2") == 0)
-          {
-            clrscr();
-            printf("WEEKLY EXPENSE ADDED!\n");
-            temp->recurring = 2;
-            break;
-          }
-          else if (strcmp(str, "3") == 0)
-          {
-            clrscr();
-            printf("MONTHLY EXPENSE ADDED!\n");
-            temp->recurring = 3;
-            break;
-          }
-          else printf("INVALID INPUT!\n");
+          clrscr();
+          printf("DAILY EXPENSE ADDED!\n");
+          temp->recurring = 1;
+          break;
         }
         else if (strcmp(str, "2") == 0)
         {
-          temp->recurring = 0;
+          clrscr();
+          printf("WEEKLY EXPENSE ADDED!\n");
+          temp->recurring = 2;
+          break;
+        }
+        else if (strcmp(str, "3") == 0)
+        {
+          clrscr();
+          printf("MONTHLY EXPENSE ADDED!\n");
+          temp->recurring = 3;
           break;
         }
         else printf("INVALID INPUT!\n");
       }
+      break;
     }
+    else printf("INVALID INPUT!\n");
   }
 
   balance -= temp->value;
@@ -222,17 +219,21 @@ void add_income()
   temp->time = time();
   // update the value of the balance
   strcpy(str, "NULL");
-  while(strcmp(str, "1") != 0 || strcmp(str, "2") != 0)
+  while(1)
   {
     clrscr();
     printf("IS THE INCOME RECURRING?\n[1]YES\n[2]NO\nChoice: ");
     fgets(str, 50, stdin);
     strtok(str, "\n");
-    if (strcmp(str, "2") == 0) break;
+    if (strcmp(str, "2") == 0)
+    {
+      temp->recurring = 0;
+      break;
+    }
     if (strcmp(str, "1") == 0)
     {
       strcpy(str, "NULL");
-      while(strcmp(str, "1") != 0 || strcmp(str, "2") != 0 || strcmp(str, "3") != 0)
+      while(1)
       {
         clrscr();
         printf("How often?\n[1]Daily\n[2]Weekly\n[3]Monthly\nChoice: ");
@@ -240,36 +241,28 @@ void add_income()
         strtok(str, "\n");
         if (strcmp(str, "1") == 0)
         {
-          if (strcmp(str, "1") == 0)
-          {
-            clrscr();
-            printf("DAILY INCOME ADDED!\n");
-            temp->recurring = 1;
-            break;
-          }
-          else if (strcmp(str, "2") == 0)
-          {
-            clrscr();
-            printf("WEEKLY INCOME ADDED!\n");
-            temp->recurring = 2;
-            break;
-          }
-          else if (strcmp(str, "3") == 0)
-          {
-            clrscr();
-            printf("MONTHLY INCOME ADDED!\n");
-            temp->recurring = 3;
-            break;
-          }
-          else printf("INVALID INPUT!\n");
+          clrscr();
+          printf("DAILY INCOME ADDED!\n");
+          temp->recurring = 1;
+          break;
         }
         else if (strcmp(str, "2") == 0)
         {
-          temp->recurring = 0;
+          clrscr();
+          printf("WEEKLY INCOME ADDED!\n");
+          temp->recurring = 2;
+          break;
+        }
+        else if (strcmp(str, "3") == 0)
+        {
+          clrscr();
+          printf("MONTHLY INCOME ADDED!\n");
+          temp->recurring = 3;
           break;
         }
         else printf("INVALID INPUT!\n");
       }
+      break;
     }
   }
 
