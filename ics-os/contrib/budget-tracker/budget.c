@@ -67,12 +67,36 @@ void update_category_count(char category_name[])
     lower_name[i] = to_lower(category_name[i]);
     i += 1;
   }
+  // adds a terminating character
+  lower_name[i] = '\0';
 
-  printf("LOWERCASE FORM IS: %s\n", lower_name);
-  // CATEGORY * temp = category_main;
-  // while (temp != NULL)
-  // {
-  // }
+  // printf("LOWERCASE FORM IS: %s\n", lower_name);
+  CATEGORY * temp = category_main;
+  CATEGORY * new_category = (CATEGORY * ) malloc(sizeof(CATEGORY));
+  strcpy(new_category->category, lower_name);
+  new_category->count = 1;
+  new_category->next = NULL;
+  new_category->prev = NULL;
+
+  if (temp == NULL)
+  {
+    category_main = new_category;
+    return;
+  }
+
+  while (temp->next != NULL)
+  {
+    if(strcmp(temp->category, lower_name) == 0)
+    {
+      temp->count += 1;
+      return;
+    }
+    temp = temp->next;
+  }
+
+  temp->next = new_category;
+  new_category->prev = temp;
+
 }
 
 void add_expense()
@@ -85,10 +109,13 @@ void add_expense()
   temp->is_income = 0;
   temp->next = NULL;
   temp->prev = NULL;
+  clrscr();
   printf("Category of expense: ");
   fgets(str, 50, stdin);
   strtok(str, "\n");
   strcpy(temp->category, str);
+  update_category_count(str);
+  clrscr();
   printf("Value: ");
   fgets(str, 50, stdin);
   strtok(str, "\n");
@@ -100,14 +127,17 @@ void add_expense()
   strcpy(str, "NULL");
   while(strcmp(str, "1") != 0 || strcmp(str, "2") != 0)
   {
+    clrscr();
     printf("IS THE EXPENSE RECURRING?\n[1]YES\n[2]NO\nChoice: ");
     fgets(str, 50, stdin);
     strtok(str, "\n");
+    if (strcmp(str, "2") == 0) break;
     if (strcmp(str, "1") == 0)
     {
       strcpy(str, "NULL");
       while(strcmp(str, "1") != 0 || strcmp(str, "2") != 0 || strcmp(str, "3") != 0)
       {
+        clrscr();
         printf("How often?\n[1]Daily\n[2]Weekly\n[3]Monthly\nChoice: ");
         fgets(str, 50, stdin);
         strtok(str, "\n");
@@ -115,18 +145,21 @@ void add_expense()
         {
           if (strcmp(str, "1") == 0)
           {
+            clrscr();
             printf("DAILY EXPENSE ADDED!\n");
             temp->recurring = 1;
             break;
           }
           else if (strcmp(str, "2") == 0)
           {
+            clrscr();
             printf("WEEKLY EXPENSE ADDED!\n");
             temp->recurring = 2;
             break;
           }
           else if (strcmp(str, "3") == 0)
           {
+            clrscr();
             printf("MONTHLY EXPENSE ADDED!\n");
             temp->recurring = 3;
             break;
@@ -144,6 +177,7 @@ void add_expense()
   }
 
   balance -= temp->value;
+  clrscr();
   printf("EXPENSE ADDED!\n");
   printf("CURRENT BALANCE: Php %d\n", balance);
 
@@ -172,10 +206,13 @@ void add_income()
   temp->is_income = 1;
   temp->next = NULL;
   temp->prev = NULL;
+  clrscr();
   printf("Category of income: ");
   fgets(str, 50, stdin);
   strtok(str, "\n");
+  update_category_count(str);
   strcpy(temp->category, str);
+  clrscr();
   printf("Value: ");
   fgets(str, 50, stdin);
   strtok(str, "\n");
@@ -187,14 +224,17 @@ void add_income()
   strcpy(str, "NULL");
   while(strcmp(str, "1") != 0 || strcmp(str, "2") != 0)
   {
+    clrscr();
     printf("IS THE INCOME RECURRING?\n[1]YES\n[2]NO\nChoice: ");
     fgets(str, 50, stdin);
     strtok(str, "\n");
+    if (strcmp(str, "2") == 0) break;
     if (strcmp(str, "1") == 0)
     {
       strcpy(str, "NULL");
       while(strcmp(str, "1") != 0 || strcmp(str, "2") != 0 || strcmp(str, "3") != 0)
       {
+        clrscr();
         printf("How often?\n[1]Daily\n[2]Weekly\n[3]Monthly\nChoice: ");
         fgets(str, 50, stdin);
         strtok(str, "\n");
@@ -202,18 +242,21 @@ void add_income()
         {
           if (strcmp(str, "1") == 0)
           {
+            clrscr();
             printf("DAILY INCOME ADDED!\n");
             temp->recurring = 1;
             break;
           }
           else if (strcmp(str, "2") == 0)
           {
+            clrscr();
             printf("WEEKLY INCOME ADDED!\n");
             temp->recurring = 2;
             break;
           }
           else if (strcmp(str, "3") == 0)
           {
+            clrscr();
             printf("MONTHLY INCOME ADDED!\n");
             temp->recurring = 3;
             break;
@@ -231,6 +274,7 @@ void add_income()
   }
 
   balance += temp->value;
+  clrscr();
   printf("INCOME ADDED!\n");
   printf("CURRENT BALANCE: Php %d\n", balance);
 
@@ -251,7 +295,30 @@ void add_income()
 
 void view_summary()
 {
+  int total_categories = 0;
+  CATEGORY * category_ptr = category_main;
 
+  while(category_ptr != NULL)
+  {
+    total_categories += 1;
+    category_ptr = category_ptr->next;
+  }
+  printf("CATEGORY\n");
+  printf("-----------\n");
+  category_ptr = category_main;
+  while(category_ptr != NULL)
+  {
+    printf("%s\t\t|%.2f\n", category_ptr->category, (total_categories/category_ptr->count) * 100);
+    category_ptr = category_ptr->next;
+  }
+  printf("-----------\n");
+  printf("TOTAL CATEGORIES: %d\n", total_categories);
+
+  // NODE * transaction_ptr = main_pointer;
+  // while (transaction_ptr != NULL)
+  // {
+  //
+  // }
 }
 
 void update_recurring()
@@ -358,16 +425,19 @@ int main()
     {
       clrscr();
       printf("ADD INCOME\n");
+      add_income();
     }
     else if(strcmp(str, "2") == 0)
     {
       clrscr();
+      printf("ADD EXPENSE\n");
       add_expense();
     }
     else if(strcmp(str, "3") == 0)
     {
       clrscr();
       printf("VIEW SUMMARY\n");
+      view_summary();
     }
     else if(strcmp(str, "4") == 0)
     {
