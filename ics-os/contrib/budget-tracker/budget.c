@@ -22,6 +22,7 @@ typedef struct CATEGORIES
 {
   char category[50];
   int count;
+  int isIncome;
   struct CATEGORIES * next;
   struct CATEGORIES * prev;
 } CATEGORY;
@@ -31,22 +32,42 @@ CATEGORY * category_main;
 
 int balance = 0;
 // function for getting the user's input
-char * get_input()
+void get_input(char input[50])
 {
-  char * str;
-  fflush(stdin);
-  fgets(str, 50, stdin);
-  strtok(str, "\n");
-  return str;
+  write_text("Input: ", 10, 180, WHITE, 0);
+  int limit = 0;
+  char key;
+  while (1)
+  {
+
+    key = (char) getch();
+
+    if (key == '\n')
+    {
+      input[limit] = '\0';
+      return;
+    }
+    // for deletion
+    if (key == '\b' && limit >= 0)
+    {
+      limit -= 1;
+      fill_rect(50 + limit * 10, 80 , 10, 10,BLACK);
+      continue;
+    }
+    input[limit] = key;
+    write_char(key, 70 + limit*10, 180, WHITE, 0);
+    limit += 1;
+  }
 }
 // function for printing the main menu
 void main_menu()
 {
 
-  printf("BUDGET TRACKER\n");
-  printf("An ICS-OS budget management application\n");
-  printf("[1] Add Income\n[2] Add Expense\n[3] View Summary\n[4] Help\n[5] Exit\n");
-  printf("Choice: ");
+  // write_text("BUDGET TRACKER", )
+  // printf("BUDGET TRACKER\n");
+  // printf("An ICS-OS budget management application\n");
+  // printf("[1] Add Income\n[2] Add Expense\n[3] View Summary\n[4] Help\n[5] Exit\n");
+  // printf("Choice: ");
   // return get_input();
 }
 
@@ -57,7 +78,7 @@ int to_lower(int a)
     return (a + 32);
   }
 }
-void update_category_count(char category_name[])
+void update_category_count(char category_name[], int isIncome)
 {
   char lower_name[50];
   int i = 0;
@@ -77,7 +98,7 @@ void update_category_count(char category_name[])
   new_category->count = 1;
   new_category->next = NULL;
   new_category->prev = NULL;
-
+  new_category->isIncome = isIncome;
   if (temp == NULL)
   {
     category_main = new_category;
@@ -114,7 +135,7 @@ void add_expense()
   fgets(str, 50, stdin);
   strtok(str, "\n");
   strcpy(temp->category, str);
-  update_category_count(str);
+  update_category_count(str, 0);
   clrscr();
   printf("Value: ");
   fgets(str, 50, stdin);
@@ -207,7 +228,7 @@ void add_income()
   printf("Category of income: ");
   fgets(str, 50, stdin);
   strtok(str, "\n");
-  update_category_count(str);
+  update_category_count(str, 1);
   strcpy(temp->category, str);
   clrscr();
   printf("Value: ");
@@ -288,24 +309,32 @@ void add_income()
 
 void view_summary()
 {
-  int total_categories = 0;
+  int total_income_categories = 0;
+  int total_expense_categories = 0;
   CATEGORY * category_ptr = category_main;
 
   while(category_ptr != NULL)
   {
-    total_categories += 1;
+    if (category_ptr->isIncome == 1) total_income_categories += 1;
+    else total_expense_categories += 1;
     category_ptr = category_ptr->next;
   }
-  printf("CATEGORY\n");
+
+  textcolor(GREEN);
+  printf("INCOME SUMMARY\n");
   printf("-----------\n");
   category_ptr = category_main;
   while(category_ptr != NULL)
   {
-    printf("%s\t\t|%.2f\n", category_ptr->category, (total_categories/category_ptr->count) * 100);
-    category_ptr = category_ptr->next;
+    if (category_ptr->isIncome == 1)
+    {
+      int percentage = (category_ptr->count/ total_income_categories) * 100;
+      printf("%s\t\t| %d\n", category_ptr->category, percentage);
+      category_ptr = category_ptr->next;
+    }
   }
   printf("-----------\n");
-  printf("TOTAL CATEGORIES: %d\n", total_categories);
+  textcolor(WHITE);
 
   // NODE * transaction_ptr = main_pointer;
   // while (transaction_ptr != NULL)
@@ -397,51 +426,72 @@ void update_recurring()
     t = t->next;
   }
 }
+
+void fill_rect(int x, int y, int w, int h, int color){
+   int i,j;
+   for (i=y;i<=(y+h);i++)
+      for (j=x;j<=(x+w);j++)
+         write_pixel(j,i,color);
+}
+
+// void write_file()
+// {
+//   FILE * fp;
+//
+//   fp = fopen("/../converts  ")
+// }
 int main()
 {
-  update_recurring();
-  while(1)
-  {
-    delay(100);
-    clrscr();
-    main_menu();
-    char str[50];
-    fflush(stdin);
-    fgets(str, 50, stdin);
-    strtok(str, "\n");
+  // update_recurring();
+  set_graphics(VGA_320X200X256);
 
-    if(strcmp(str, "5") == 0)
-    {
-      break;
-    }
-    if(strcmp(str, "1") == 0)
-    {
-      clrscr();
-      printf("ADD INCOME\n");
-      add_income();
-    }
-    else if(strcmp(str, "2") == 0)
-    {
-      clrscr();
-      printf("ADD EXPENSE\n");
-      add_expense();
-    }
-    else if(strcmp(str, "3") == 0)
-    {
-      clrscr();
-      printf("VIEW SUMMARY\n");
-      view_summary();
-    }
-    else if(strcmp(str, "4") == 0)
-    {
-      clrscr();
-      printf("HELP\n");
-    }
-    else
-    {
-      clrscr();
-      printf("INVALID INPUT!\n");
-    }
-  }
+
+  char input[50];
+  get_input(input);
+  // while(1)
+  // {
+  //   delay(100);
+  //   clrscr();
+  //   main_menu();
+  //   char str[50];
+  //
+  //   strcmp(str, get_input());
+  //   // fflush(stdin);
+  //   // fgets(str, 50, stdin);
+  //   // strtok(str, "\n");
+  //
+  //   if(strcmp(str, "5") == 0)
+  //   {
+  //     break;
+  //   }
+  //   if(strcmp(str, "1") == 0)
+  //   {
+  //     clrscr();
+  //     printf("ADD INCOME\n");
+  //     add_income();
+  //   }
+  //   else if(strcmp(str, "2") == 0)
+  //   {
+  //     clrscr();
+  //     printf("ADD EXPENSE\n");
+  //     add_expense();
+  //   }
+  //   else if(strcmp(str, "3") == 0)
+  //   {
+  //     clrscr();
+  //     printf("VIEW SUMMARY\n");
+  //     view_summary();
+  //   }
+  //   else if(strcmp(str, "4") == 0)
+  //   {
+  //     clrscr();
+  //     printf("HELP\n");
+  //   }
+  //   else
+  //   {
+  //     clrscr();
+  //     printf("INVALID INPUT!\n");
+  //   }
+  // }
   return 0;
 }
