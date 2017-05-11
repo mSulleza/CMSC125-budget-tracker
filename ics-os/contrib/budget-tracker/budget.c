@@ -131,16 +131,14 @@ void add_expense()
   temp->is_income = 0;
   temp->next = NULL;
   temp->prev = NULL;
-  clrscr();
-  printf("Category of expense: ");
-  fgets(str, 50, stdin);
-  strtok(str, "\n");
-  strcpy(temp->category, str);
+  set_graphics(VGA_320X200X256);
+  write_text("Category of expense?", 15, 25, WHITE, 0);
+  get_input(str);
   update_category_count(str, 0);
-  clrscr();
-  printf("Value: ");
-  fgets(str, 50, stdin);
-  strtok(str, "\n");
+  strcpy(temp->category, str);
+  set_graphics(VGA_320X200X256);
+  write_text("Value?", 15, 25, WHITE, 0);
+  get_input(str);
   temp->value = atoi(str);
 
   // gets the current time
@@ -153,52 +151,68 @@ void add_expense()
     printf("IS THE EXPENSE RECURRING?\n[1]YES\n[2]NO\nChoice: ");
     fgets(str, 50, stdin);
     strtok(str, "\n");
+    set_graphics(VGA_320X200X256);
+    write_text("Recurring?", 15, 25, WHITE, 0);
+    write_text("[1] Yes [2] No", 15, 45, WHITE, 0);
+    get_input(str);
     if (strcmp(str, "2") == 0)
     {
       temp->recurring = 0;
       break;
     }
-    else if (strcmp(str, "1") == 0)
+    if (strcmp(str, "1") == 0)
     {
       strcpy(str, "NULL");
       while(1)
       {
-        clrscr();
-        printf("How often?\n[1]Daily\n[2]Weekly\n[3]Monthly\nChoice: ");
-        fgets(str, 50, stdin);
-        strtok(str, "\n");
+        set_graphics(VGA_320X200X256);
+        write_text("How often?", 15, 25, WHITE, 0);
+        write_text("[1] Daily", 15, 35, WHITE, 0);
+        write_text("[2] Weekly", 15, 45, WHITE, 0);
+        write_text("[3] Monthly", 15, 55, WHITE, 0);
+        get_input(str);
         if (strcmp(str, "1") == 0)
         {
-          clrscr();
-          printf("DAILY EXPENSE ADDED!\n");
+          set_graphics(VGA_320X200X256);
+          write_text("DAILY EXPENSE ADDED!", 60, 80, WHITE, 0);
           temp->recurring = 1;
           break;
         }
         else if (strcmp(str, "2") == 0)
         {
-          clrscr();
-          printf("WEEKLY EXPENSE ADDED!\n");
-          temp->recurring = 2;
+          set_graphics(VGA_320X200X256);
+          write_text("WEEKLY EXPENSE ADDED!", 60, 80, WHITE, 0);
+          temp->recurring = 1;
           break;
         }
         else if (strcmp(str, "3") == 0)
         {
-          clrscr();
-          printf("MONTHLY EXPENSE ADDED!\n");
-          temp->recurring = 3;
+          set_graphics(VGA_320X200X256);
+          write_text("MONTHLY EXPENSE ADDED!", 60, 80, WHITE, 0);
+          temp->recurring = 1;
           break;
         }
-        else printf("INVALID INPUT!\n");
+        else
+        {
+          set_graphics(VGA_320X200X256);
+          write_text("INVALID INPUT!", 60, 80, RED, 0);
+        }
       }
       break;
     }
-    else printf("INVALID INPUT!\n");
+    else write_text("INVALID INPUT!", 60, 80, RED, 0);
   }
 
   balance -= temp->value;
-  clrscr();
-  printf("EXPENSE ADDED!\n");
-  printf("CURRENT BALANCE: Php %d\n", balance);
+  char balance_text[50];
+  sprintf(balance_text, "Current Balance: Php %d", balance);
+  delay(50);
+  set_graphics(VGA_320X200X256);
+  if (balance > 0)
+  {
+    write_text(balance_text, 50, 80, GREEN, 0);
+  }
+  else write_text(balance_text, 50, 80, RED, 0);
 
   NODE * t = main_pointer;
   if (t == NULL)
@@ -447,15 +461,27 @@ void fill_rect(int x, int y, int w, int h, int color){
          write_pixel(j,i,color);
 }
 
-// void write_file()
-// {
-//   FILE * fp;
-//
-//   fp = fopen("/../converts  ")
-// }
+void write_file()
+{
+  FILE * fp;
+  fp = fopen("transaction_nodes.txt", "w+");
+
+  NODE * temp = main_pointer;
+
+  while(temp != NULL)
+  {
+    fwrite(temp->value, 1, sizeof(temp->value), fp);
+    // fwrite(temp->is_income, 1, sizeof(temp->is_income), fp);
+    // fwrite(temp->category, 1, sizeof(temp->category), fp);
+    // fwrite(temp->time, 1, sizeof(temp->time), fp);
+    // fwrite(temp->recurring, 1, sizeof(temp->recurring), fp);
+    temp = temp->next;
+  }
+  fclose(fp);
+}
 int main()
 {
-  // update_recurring();
+  update_recurring();
   set_graphics(VGA_320X200X256);
 
   while(1)
@@ -474,7 +500,9 @@ int main()
     if(strcmp(input, "5") == 0)
     {
       set_graphics(VGA_320X200X256);
-      break;
+      set_graphics(VGA_TEXT80X25X16);
+      write_file();
+      exit(0);
     }
     if(strcmp(input, "1") == 0)
     {
@@ -504,7 +532,5 @@ int main()
       write_text("INVALID INPUT!", 80, 60, RED, 0);
     }
    }
-
-   exit(1);
   return 0;
 }
