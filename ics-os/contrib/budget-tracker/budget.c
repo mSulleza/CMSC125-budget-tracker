@@ -63,12 +63,14 @@ void get_input(char input[50])
 void main_menu()
 {
 
-  // write_text("BUDGET TRACKER", )
-  // printf("BUDGET TRACKER\n");
-  // printf("An ICS-OS budget management application\n");
-  // printf("[1] Add Income\n[2] Add Expense\n[3] View Summary\n[4] Help\n[5] Exit\n");
-  // printf("Choice: ");
-  // return get_input();
+  write_text("BUDGET TRACKER", 100, 10, WHITE, 0);
+  write_text("An ICS-OS budget management app", 15, 25, WHITE, 0);
+  write_text("[1] Add Income", 80, 60, WHITE, 0);
+  write_text("[2] Add Expense", 80, 72, WHITE, 0);
+  write_text("[3] View Summary", 80, 84, WHITE, 0);
+  write_text("[4] Help", 80, 96, WHITE, 0);
+  write_text("[5] Exit", 80, 108, WHITE, 0);
+  //return get_input();
 }
 
 int to_lower(int a)
@@ -445,21 +447,23 @@ int main()
   // update_recurring();
   set_graphics(VGA_320X200X256);
 
-
   char input[50];
-  get_input(input);
-  // while(1)
-  // {
-  //   delay(100);
-  //   clrscr();
-  //   main_menu();
-  //   char str[50];
-  //
-  //   strcmp(str, get_input());
-  //   // fflush(stdin);
-  //   // fgets(str, 50, stdin);
-  //   // strtok(str, "\n");
-  //
+  //main_menu();
+  
+  while(1)
+  {
+    delay(100);
+    clrscr();
+    main_menu();
+    char str[50];
+
+    get_input(input);
+  
+   // strcmp(str, get_input());
+     // fflush(stdin);
+     // fgets(str, 50, stdin);
+     // strtok(str, "\n");
+  
   //   if(strcmp(str, "5") == 0)
   //   {
   //     break;
@@ -467,7 +471,7 @@ int main()
   //   if(strcmp(str, "1") == 0)
   //   {
   //     clrscr();
-  //     printf("ADD INCOME\n");
+  //     write_text("ADD INCOME", 80, 60, WHITE, 0);
   //     add_income();
   //   }
   //   else if(strcmp(str, "2") == 0)
@@ -492,6 +496,6 @@ int main()
   //     clrscr();
   //     printf("INVALID INPUT!\n");
   //   }
-  // }
+   }
   return 0;
 }
