@@ -70,6 +70,10 @@ void main_menu()
   write_text("[3] View Summary", 80, 84, WHITE, 0);
   write_text("[4] Help", 80, 96, WHITE, 0);
   write_text("[5] Exit", 80, 108, WHITE, 0);
+
+  char str[50];
+  sprintf(str, "BALANCE: %d", balance);
+  write_text(str, 20, 150, WHITE, 0);
 }
 
 int to_lower(int a)
