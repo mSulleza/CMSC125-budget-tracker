@@ -61,7 +61,7 @@ void get_input(char input[50])
 }
 // function for printing the main menu
 void main_menu()
-{
+{  
   set_graphics(VGA_320X200X256);
   write_text("BUDGET TRACKER", 100, 10, WHITE, 0);
   write_text("An ICS-OS budget management app", 15, 25, WHITE, 0);
@@ -70,10 +70,10 @@ void main_menu()
   write_text("[3] View Summary", 80, 84, WHITE, 0);
   write_text("[4] Help", 80, 96, WHITE, 0);
   write_text("[5] Exit", 80, 108, WHITE, 0);
-
-  char str[50];
-  sprintf(str, "BALANCE: %d", balance);
-  write_text(str, 20, 150, WHITE, 0);
+    
+    char str[50];
+    sprintf(str, "BALANCE: Php %d", balance);
+    write_text(str, 80, 145, WHITE, 0);
 }
 
 int to_lower(int a)
@@ -157,7 +157,8 @@ void add_expense()
     strtok(str, "\n");
     set_graphics(VGA_320X200X256);
     write_text("Recurring?", 15, 25, WHITE, 0);
-    write_text("[1] Yes [2] No", 15, 45, WHITE, 0);
+    write_text("[1] Yes", 20, 45, WHITE, 0);
+    write_text("[2] No", 20, 55, WHITE, 0);
     get_input(str);
     if (strcmp(str, "2") == 0)
     {
@@ -262,7 +263,8 @@ void add_income()
   {
     set_graphics(VGA_320X200X256);
     write_text("Recurring?", 15, 25, WHITE, 0);
-    write_text("[1] Yes [2] No", 15, 45, WHITE, 0);
+    write_text("[1] Yes", 20, 45, WHITE, 0);
+    write_text("[2] No", 20, 55, WHITE, 0);
     get_input(str);
     if (strcmp(str, "2") == 0)
     {
@@ -343,6 +345,7 @@ void view_summary()
   int total_income_categories = 0;
   int total_expense_categories = 0;
   CATEGORY * category_ptr = category_main;
+  NODE * temp = category_main;
 
   while(category_ptr != NULL)
   {
@@ -352,21 +355,33 @@ void view_summary()
   }
 
   textcolor(GREEN);
-  printf("INCOME SUMMARY\n");
-  printf("-----------\n");
+  //printf("INCOME SUMMARY\n");
+  write_text("----------------------", 65, 20, WHITE, 0);
   category_ptr = category_main;
+  char percent[20];
+  int enter = 40;
+  char key;
+
   while(category_ptr != NULL)
   {
     if (category_ptr->isIncome == 1)
     {
       int percentage = (category_ptr->count/ total_income_categories) * 100;
-      printf("%s\t\t| %d\n", category_ptr->category, percentage);
+      write_text(category_ptr->category, 10, enter, WHITE, 0);
+      sprintf(percent, "%d", percentage);
+      write_text(percent, 230, enter, WHITE, 0);
       category_ptr = category_ptr->next;
+      enter+=15;
     }
   }
-  printf("-----------\n");
-  textcolor(WHITE);
 
+  key = (char) getch();
+
+    if(key == '\b') {
+      main();
+    }
+  //write_text("-----------", 80, 80, WHITE, 0);
+  //textcolor(WHITE);
   // NODE * transaction_ptr = main_pointer;
   // while (transaction_ptr != NULL)
   // {
@@ -495,7 +510,6 @@ int main()
     char input[50];
     main_menu();
     get_input(input);
-
    // strcmp(str, get_input());
      // fflush(stdin);
      // fgets(str, 50, stdin);
@@ -522,13 +536,16 @@ int main()
     else if(strcmp(input, "3") == 0)
     {
       set_graphics(VGA_320X200X256);
-      write_text("VIEW SUMMARY", 80, 10, WHITE, 0);
+      write_text("VIEW SUMMARY", 110, 10, WHITE, 0);
       view_summary();
     }
     else if(strcmp(input, "4") == 0)
     {
       set_graphics(VGA_320X200X256);
-      write_text("HELP", 80, 60, WHITE, 0);
+      write_text("HELP", 140, 20, WHITE, 0);
+      write_text("This app helps you", 70, 60, WHITE, 0);
+      write_text("manage your budget.", 70, 70, WHITE, 0);
+      write_text("2017 UPLB", 120, 180, WHITE, 0);
     }
     else
     {
