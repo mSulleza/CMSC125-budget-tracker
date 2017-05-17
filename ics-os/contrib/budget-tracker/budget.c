@@ -358,23 +358,35 @@ void view_summary()
   //printf("INCOME SUMMARY\n");
   write_text("----------------------", 65, 20, WHITE, 0);
   category_ptr = category_main;
-  char percent[20];
+  char bal[20];
   int enter = 40;
   char key;
 
   while(category_ptr != NULL)
   {
+    //prints income categories
     if (category_ptr->isIncome == 1)
     {
-      int percentage = (category_ptr->count/ total_income_categories) * 100;
-      write_text(category_ptr->category, 10, enter, WHITE, 0);
-      sprintf(percent, "%d", percentage);
-      write_text(percent, 230, enter, WHITE, 0);
+      int percentage = (category_ptr->count/total_income_categories) * 100;
+      write_text(category_ptr->category, 10, enter, GREEN, 0);
+      sprintf(bal, "%d", percentage);
+      write_text(bal, 230, enter, GREEN, 0);
       category_ptr = category_ptr->next;
       enter+=15;
     }
-  }
 
+    //prints expense categories
+    else if(category_ptr->isIncome == 0) {
+      int percentage = (category_ptr->count/total_expense_categories) * 100;
+      write_text(category_ptr->category, 30, enter, WHITE, 0);
+      sprintf(bal, "%d", percentage);
+      write_text(bal, 230, enter, WHITE, 0);
+      category_ptr = category_ptr->next;
+      enter+=15;
+    }
+  }  
+
+  //back button
   key = (char) getch();
 
     if(key == '\b') {
