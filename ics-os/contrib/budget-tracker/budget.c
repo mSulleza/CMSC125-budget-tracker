@@ -37,6 +37,7 @@ void get_input(char input[50])
   write_text("Input: ", 10, 180, WHITE, 0);
   int limit = 0;
   char key;
+  input[0] = NULL;
   while (1)
   {
 
@@ -44,24 +45,27 @@ void get_input(char input[50])
 
     if (key == '\n')
     {
-      input[limit] = '\0';
+      // input[limit] = '\n';
+      // limit+=1;
+      input[limit] = NULL;
+      // strcat(input, "\0");
       return;
     }
     // for deletion
-    if (key == '\b' && limit >= 0)
+    if (key == '\b' && limit > 0)
     {
       limit -= 1;
-      fill_rect(70 + limit * 10, 180 , 10, 10,BLACK);
+      fill_rect(76 + limit * 10, 180 , 10, 10,BLACK);
       continue;
     }
     input[limit] = key;
-    write_char(key, 70 + limit*10, 180, WHITE, 0);
     limit += 1;
+    write_char(key, 70 + limit*10, 180, WHITE, 0);
   }
 }
 // function for printing the main menu
 void main_menu()
-{  
+{
   set_graphics(VGA_320X200X256);
   write_text("BUDGET TRACKER", 100, 10, WHITE, 0);
   write_text("An ICS-OS budget management app", 15, 25, WHITE, 0);
@@ -70,7 +74,7 @@ void main_menu()
   write_text("[3] View Summary", 80, 84, WHITE, 0);
   write_text("[4] Help", 80, 96, WHITE, 0);
   write_text("[5] Exit", 80, 108, WHITE, 0);
-    
+
     char str[50];
     sprintf(str, "BALANCE: Php %d", balance);
     write_text(str, 80, 145, WHITE, 0);
@@ -153,8 +157,6 @@ void add_expense()
   {
     clrscr();
     printf("IS THE EXPENSE RECURRING?\n[1]YES\n[2]NO\nChoice: ");
-    fgets(str, 50, stdin);
-    strtok(str, "\n");
     set_graphics(VGA_320X200X256);
     write_text("Recurring?", 15, 25, WHITE, 0);
     write_text("[1] Yes", 20, 45, WHITE, 0);
@@ -239,7 +241,7 @@ void add_income()
   // write_text("ADD INCOME", 80, 10, WHITE, 0);
   NODE * temp = (NODE *)malloc(sizeof(NODE));
   char str[50];
-  fflush(stdin);
+  // fflush(stdin);
 
   // set is_income to false
   temp->is_income = 1;
@@ -271,7 +273,7 @@ void add_income()
       temp->recurring = 0;
       break;
     }
-    if (strcmp(str, "1") == 0)
+    else if (strcmp(str, "1") == 0)
     {
       strcpy(str, "NULL");
       while(1)
@@ -479,30 +481,111 @@ void fill_rect(int x, int y, int w, int h, int color){
       for (j=x;j<=(x+w);j++)
          write_pixel(j,i,color);
 }
-
+void write_string(char str[50], FILE * fp)
+{
+  int ch = 0;
+  char text[50];
+  strcpy(text, str);
+  for( ch = 0 ; ch < strlen(text) + 1; ch++ )
+  {
+    fputc(text[ch], fp);
+  }
+}
 void write_file()
 {
-  FILE * fp;
-  fp = fopen("transaction_nodes.txt", "w+");
-
+  FILE *fp;
   NODE * temp = main_pointer;
+  fp = fopen("file.txt", "w");
 
+  // char * buffer;
   while(temp != NULL)
   {
-    fwrite(temp->value, 1, sizeof(temp->value), fp);
-    // fwrite(temp->is_income, 1, sizeof(temp->is_income), fp);
-    // fwrite(temp->category, 1, sizeof(temp->category), fp);
-    // fwrite(temp->time, 1, sizeof(temp->time), fp);
-    // fwrite(temp->recurring, 1, sizeof(temp->recurring), fp);
+    fputc('\n', fp);
+    char value[50];
+    // char * buffer = malloc(temp->value);
+    sprintf(value, "%d", temp->value);
+    // printf("%s\n")
+    write_string(value, fp);
+    fputc('\n', fp);
+    // buffer = malloc(sizeof(temp->is_income));
+    char is_income[50];
+    sprintf(is_income, "%d", temp->is_income);
+    write_string(is_income, fp);
+    fputc('\n', fp);
+
+    write_string(temp->category, fp);
+    fputc('\n', fp);
+
+    // buffer = malloc(sizeof(temp->time));
+    char curr_time[50];
+    sprintf(curr_time, "%d", temp->time);
+    write_string(curr_time, fp);
+    fputc('\n', fp);
+
+    // buffer = malloc(sizeof(temp->recurring));
+    char recurring[50];
+    sprintf(recurring, "%d", temp->recurring);
+    write_string(recurring, fp);
+    fputc('\n', fp);
+
     temp = temp->next;
+  }
+  fclose(fp);
+}
+void read_file()
+{
+  set_graphics(VGA_TEXT80X25X16);
+  FILE * fp;
+  fp = fopen("file.txt", "r");
+  if (fp == NULL) return;
+
+  while (!feof(fp))
+  {
+    NODE * new = (NODE *)malloc(sizeof(NODE));
+    new->prev = NULL;
+    new->next = NULL;
+    char str[50];
+
+    fgets(str, 50, fp);
+    if (strcmp(str, "waiting...") == 0) continue;
+    if (strcmp(str, "") == 0) continue;
+    new->value = atoi(str);
+
+    fgets(str, 50, fp);
+    new->is_income = atoi(str);
+
+    if (new->is_income == 1) balance += new->value;
+    else balance -= new->value;
+
+    fgets(str, 50, fp);
+    strcpy(new->category, str);
+
+    fgets(str, time, fp);
+    new->time = atoi(str);
+
+    fgets(str, recurring, fp);
+    new->recurring = atoi(str);
+
+    NODE * temp = main_pointer;
+    if (temp == NULL) main_pointer = new;
+    else
+    {
+      while (temp->next != NULL)
+      {
+        temp = temp->next;
+      }
+      temp->next = new;
+      new->prev = temp;
+    }
+
   }
   fclose(fp);
 }
 int main()
 {
+  read_file();
   update_recurring();
   set_graphics(VGA_320X200X256);
-
   while(1)
   {
     delay(100);
@@ -510,10 +593,6 @@ int main()
     char input[50];
     main_menu();
     get_input(input);
-   // strcmp(str, get_input());
-     // fflush(stdin);
-     // fgets(str, 50, stdin);
-     // strtok(str, "\n");
 
     if(strcmp(input, "5") == 0)
     {
@@ -552,6 +631,7 @@ int main()
       set_graphics(VGA_320X200X256);
       write_text("INVALID INPUT!", 80, 60, RED, 0);
     }
-   }
+  }
+  write_file();
   return 0;
 }
