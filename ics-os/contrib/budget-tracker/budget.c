@@ -386,13 +386,13 @@ void view_summary()
       category_ptr = category_ptr->next;
       enter+=15;
     }
-  }  
+  }
 
   //back button
   key = (char) getch();
 
     if(key == '\b') {
-      main();
+      return;
     }
   //write_text("-----------", 80, 80, WHITE, 0);
   //textcolor(WHITE);
@@ -559,8 +559,8 @@ void read_file()
     char str[50];
 
     fgets(str, 50, fp);
-    if (strcmp(str, "waiting...") == 0) continue;
-    if (strcmp(str, "") == 0) continue;
+    if (strcmp(str, "waiting...\n") == 0) continue;
+    if (strcmp(str, "\n") == 0) continue;
     new->value = atoi(str);
 
     fgets(str, 50, fp);
@@ -571,11 +571,12 @@ void read_file()
 
     fgets(str, 50, fp);
     strcpy(new->category, str);
-
-    fgets(str, time, fp);
+    if (new->is_income == 1) update_category_count(str, 1);
+    else update_category_count(str, 0);
+    fgets(str, 50, fp);
     new->time = atoi(str);
 
-    fgets(str, recurring, fp);
+    fgets(str, 50, fp);
     new->recurring = atoi(str);
 
     NODE * temp = main_pointer;
